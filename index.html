@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Pop out Menu</title>
+    <style type="text/css">
+      /* Default page styles */
+
+      :root {
+        font-size: 16px;
+      }
+
+      body {
+        padding: 2rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+          "Segoe UI Symbol";
+        max-width: 60ch;
+        margin-inline: auto;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+        color: #1f1f1f;
+        margin-block-end: 2rem;
+      }
+
+      button {
+        padding: 0.5rem 0.75rem;
+
+        border: none;
+        border-radius: 0.125rem;
+
+        font-size: 1rem;
+        color: #1f1f1f;
+      }
+
+      section#informations button ~ button {
+        margin-inline-start: 0.5rem;
+      }
+
+      button:hover {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Pop out Menu</h1>
+
+    <section id="informations">
+      <style>
+        #informations {
+          margin-block-end: 2.5rem;
+        }
+
+        #informations code {
+          background-color: #cfcfcf;
+          padding: 1px 2px;
+          border-radius: 2px;
+        }
+      </style>
+      <p>
+        Pop out Menu using the <code>dialog</code> tag. The dialog tag works
+        with the latest browsers, if you need to support older browsers you
+        might need to resort to
+        <a href="https://a11y-dialog.netlify.app">a11y-dialog</a>. You might
+        check browser support <a href="https://caniuse.com/dialog">here</a>.
+      </p>
+    </section>
+
+    <section id="popOutMenu">
+      <button id="menuButton">Open pop out</button>
+      <dialog id="menu">
+        <div>
+          <button>Menu point 1</button>
+          <button>Menu point 2</button>
+          <button>Menu point 3</button>
+          <button>Menu point 4</button>
+        </div>
+      </dialog>
+
+      <script>
+        (() => {
+          document
+            .querySelector("#menuButton")
+            .addEventListener("click", (e) => openDialog(e));
+        })();
+
+        function openDialog(e) {
+          e.stopPropagation();
+
+          const html = document.querySelector("html");
+          const dialog = document.querySelector("dialog#menu");
+          const btnRect = document
+            .querySelector("#menuButton")
+            .getBoundingClientRect();
+
+          dialog.show();
+
+          const dialogRect = dialog.getBoundingClientRect();
+          dialog.style.top = `${btnRect.bottom + 4}px`;
+          dialog.style.left = `${btnRect.left}px`;
+
+          const clickHandler = function () {
+            const rect = dialog.getBoundingClientRect();
+            const isInDialog =
+              rect.top <= event.clientY &&
+              event.clientY <= rect.top + rect.height &&
+              rect.left <= event.clientX &&
+              event.clientX <= rect.left + rect.width;
+
+            if (!isInDialog) {
+              html.removeEventListener("click", clickHandler);
+              dialog.close();
+            }
+          };
+
+          html.addEventListener("click", clickHandler);
+        }
+      </script>
+
+      <style type="text/css">
+        /* Dialog styles */
+
+        dialog {
+          border: 1px solid #e2e8f0;
+          border-radius: 0.25rem;
+
+          margin: 0;
+          padding: 0.5rem 0;
+
+          box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
+            rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+
+          position: fixed;
+        }
+
+        dialog > div {
+          display: flex;
+          flex-direction: column;
+        }
+
+        dialog > div > button {
+          background: transparent;
+          padding-inline: 2rem;
+        }
+
+        dialog > div > button:hover {
+          background: #e2e8f0;
+        }
+      </style>
+    </section>
+  </body>
+</html>
